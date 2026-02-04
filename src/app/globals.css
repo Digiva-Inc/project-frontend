@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Logo zoom animation (scale-based, responsive-safe) */
+  @keyframes logoZoom {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-logo-zoom {
+    animation: logoZoom 1.5s ease-in-out forwards;
+  }
+
+  /* Splash fade-out */
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .animate-fade-out {
+    animation: fadeOut 0.5s ease forwards;
+  }
+}

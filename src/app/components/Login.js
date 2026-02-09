@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,7 +11,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,7 +23,6 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -33,22 +30,20 @@ export default function Login() {
 
       if (!res.ok) {
         setError(data.message || "Login failed");
-        setLoading(false);
         return;
       }
 
-      // Save user info (optional)
+      // ✅ STORE AUTH DATA
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
-      localStorage.setItem("user", data.user || "admin");
+      localStorage.setItem("userName", data.user || "Employee");
 
-      // Redirect based on role
+      // ✅ REDIRECT
       if (data.role === "admin") {
         router.push("/admin");
       } else {
         router.push("/employee");
       }
-
     } catch (err) {
       setError("Server not responding");
     } finally {
@@ -99,12 +94,10 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Error message */}
           {error && (
             <p className="text-red-500 text-sm text-center">{error}</p>
           )}
 
-          {/* Login button */}
           <button
             type="submit"
             disabled={loading}
@@ -117,3 +110,5 @@ export default function Login() {
     </div>
   );
 }
+
+

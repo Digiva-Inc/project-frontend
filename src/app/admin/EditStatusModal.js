@@ -1,15 +1,25 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function EditStatusModal({ open, onClose, record, onUpdated }) {
-  const [status, setStatus] = useState(record?.status || "");
+  const [status, setStatus] = useState("selected items");
   const [loading, setLoading] = useState(false);
 
-  if (!open) return null;
+  // 🔑 ALWAYS bind dropdown to SELECTED RECORD ROLE
+  useEffect(() => {
+    if (open && record) {
+      setStatus(record.status); // ← selected role
+    }
+  }, [open, record]);
+
+  if (!open || !record) return null;
 
   const updateStatus = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("Session expired");
+    if (!token) {
+      alert("Session expired");
+      return;
+    }
 
     setLoading(true);
 
@@ -23,17 +33,15 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ status }),
-        },
+        }
       );
 
-      const data = await res.json();
-
       if (!res.ok) {
-        alert(data.message || "Update failed");
+        alert("Update failed");
         return;
       }
 
-      onUpdated(); // refresh list
+      onUpdated();
       onClose();
     } catch {
       alert("Server error");
@@ -47,13 +55,17 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
       <div onClick={onClose} className="absolute inset-0 bg-black/50" />
 
       <div className="relative bg-white rounded-xl p-6 w-full max-w-sm">
-        <h2 className="text-xl font-bold mb-4">Update Attendance Status</h2>
+        <h2 className="text-xl font-bold mb-4">
+          Update Attendance Status
+        </h2>
 
+        {/* ✅ SELECTED ROLE ONLY */}
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         >
+        <option value="">Select Status</option>
           <option value="Present">Present</option>
           <option value="Half Leave">Half Leave</option>
           <option value="Absent">Absent</option>
@@ -76,3 +88,5 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
     </div>
   );
 }
+
+

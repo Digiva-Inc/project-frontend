@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Navbar from "./navbar";
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const name = searchParams.get("user") || "Employee";
+  const [name, setName] = useState("Employee");
 
   const [status, setStatus] = useState(null);
   const [locked, setLocked] = useState(false);
@@ -15,9 +13,14 @@ export default function Page() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* ===============================
-     HELPERS
-  =============================== */
+  // ✅ LOAD USER NAME FROM LOCALSTORAGE
+  useEffect(() => {
+    const storedName = localStorage.getItem("userName");
+    if (storedName) {
+      setName(storedName);
+    }
+  }, []);
+
   const formatDate = (iso) => {
     const d = new Date(iso);
     return `${String(d.getDate()).padStart(2, "0")}/${String(
@@ -25,9 +28,6 @@ export default function Page() {
     ).padStart(2, "0")}/${d.getFullYear()}`;
   };
 
-  /* ===============================
-     API CALL
-  =============================== */
   const markAttendance = async (type) => {
     if (locked || loading) return;
 
@@ -62,16 +62,13 @@ export default function Page() {
       setDate(formatDate(data.isoTime));
       setMessage(data.message);
       setLocked(true);
-    } catch (err) {
+    } catch {
       alert("Server error");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ===============================
-     UI
-  =============================== */
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />

@@ -13,27 +13,23 @@ export default function AdminPage() {
 // solve this problem
 
   /* =========================
-     FETCH RECORDS FROM API
+  FETCH RECORDS FROM API
   ========================= */
   const fetchRecords = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/admin/records",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/admin/records", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await res.json();
 
       if (data.success) {
         setEmployees(data.data);
-        setFilteredData(data.data); // ✅ for search
       }
     } catch (err) {
       console.error("Fetch error", err);
@@ -41,8 +37,15 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchRecords();
+
+    const interval = setInterval(() => {
+      fetchRecords();
+    }, 10000); // refresh every 10 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   /* =========================
@@ -51,7 +54,7 @@ export default function AdminPage() {
   const totalEmployees = employees.length;
 
   const presentToday = employees.filter(
-    (e) => e.status === "Present" || e.status === "Half Leave"
+    (e) => e.status === "Present" || e.status === "Half Leave",
   ).length;
 
   const lateArrivals = employees.filter(
@@ -76,7 +79,6 @@ export default function AdminPage() {
 
       <main className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen px-8 py-10">
         <div className="max-w-7xl mx-auto animate-fadeIn">
-
           {/* Welcome Text */}
           <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
@@ -114,10 +116,23 @@ export default function AdminPage() {
 
 
           {/* Summary Cards */}
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"> */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <DashboardCard title="Total Employees" value={totalEmployees} color="blue" />
-            <DashboardCard title="Present Today" value={presentToday} color="green" />
-            <DashboardCard title="Late Arrivals" value={lateArrivals} color="orange" />
+            <DashboardCard
+              title="Total Employees"
+              value={totalEmployees}
+              color="blue"
+            />
+            <DashboardCard
+              title="Present Today"
+              value={presentToday}
+              color="green"
+            />
+            <DashboardCard
+              title="Late Arrivals"
+              value={lateArrivals}
+              color="orange"
+            />
           </div>
 
           {/* Attendance Table */}
@@ -173,6 +188,15 @@ export default function AdminPage() {
                         >
                           Edit
                         </button>
+                        {/* <button
+                        className="text-blue-600"
+                        onClick={() => {
+                          setSelectedRecord(emp);
+                          setEditOpen(true);
+                        }}
+                      >
+                        Edit */}
+                        {/* </button> */}
                       </td>
                     </tr>
                   ))
@@ -180,11 +204,11 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
-
         </div>
       </main>
       {/* EDIT MODAL */}
       <EditStatusModal
+        key={editRecord?.id} // 🔑 forces fresh selection per record
         open={!!editRecord}
         record={editRecord}
         onClose={() => setEditRecord(null)}
@@ -206,13 +230,17 @@ function DashboardCard({ title, value, color }) {
   };
 
   return (
-    <div className={`rounded-2xl p-6 shadow-md ${colors[color]}`}>
-      <p className="text-sm font-semibold text-gray-600 uppercase">
-        {title}
-      </p>
-      <p className="mt-3 text-4xl font-extrabold">
-        {value}
-      </p>
+    <div
+      className={`
+        rounded-2xl p-6 shadow-md ${colors[color]}
+        transition-all duration-300 ease-out
+        hover:shadow-xl hover:-translate-y-1
+        cursor-pointer
+      `}
+    >
+      <p className="text-sm font-semibold text-gray-600 uppercase">{title}</p>
+
+      <p className="mt-3 text-4xl font-extrabold">{value}</p>
     </div>
   );
 }
@@ -221,15 +249,23 @@ function StatusBadge({ status }) {
   const base = "px-3 py-1 rounded-full text-sm font-semibold inline-block";
 
   if (status === "Present") {
-    return <span className={`${base} bg-green-100 text-green-700`}>Present</span>;
+    return (
+      <span className={`${base} bg-green-100 text-green-700`}>Present</span>
+    );
   }
 
   if (status === "Absent") {
-    return <span className={`${base} bg-yellow-100 text-yellow-700`}>Absent</span>;
+    return (
+      <span className={`${base} bg-yellow-100 text-yellow-700`}>Absent</span>
+    );
   }
 
   if (status === "Half Leave") {
-    return <span className={`${base} bg-orange-100 text-orange-700`}>Half Leave</span>;
+    return (
+      <span className={`${base} bg-orange-100 text-orange-700`}>
+        Half Leave
+      </span>
+    );
   }
 
   return <span className={`${base} bg-red-100 text-red-700`}>Absent</span>;

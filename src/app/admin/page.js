@@ -10,7 +10,7 @@ export default function AdminPage() {
   const [editRecord, setEditRecord] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-// solve
+// solve this problem
 
   /* =========================
      FETCH RECORDS FROM API

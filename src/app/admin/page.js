@@ -5,8 +5,11 @@ import EditStatusModal from "./EditStatusModal";
 
 export default function AdminPage() {
   const [employees, setEmployees] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editRecord, setEditRecord] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   /* =========================
   FETCH RECORDS FROM API
@@ -62,14 +65,40 @@ export default function AdminPage() {
       <main className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen px-8 py-10">
         <div className="max-w-7xl mx-auto animate-fadeIn">
           {/* Welcome Text */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-extrabold text-gray-900">
-              Welcome Admin 👋
-            </h1>
-            <p className="mt-2 text-lg text-gray-600">
-              Here’s a quick overview of today’s attendance
-            </p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+            {/* Left Side - Welcome Text */}
+            <div>
+              <h1 className="text-4xl font-extrabold text-gray-900">
+                Welcome Admin 👋
+              </h1>
+              <p className="mt-2 text-lg text-gray-600">
+                Here's a quick overview of today’s attendance
+              </p>
+            </div>
+
+            {/* Right Side - Search Box */}
+            <div className="relative w-full md:w-72">
+
+              {/* 🔍 Search Icon */}
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                🔍
+              </span>
+
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Search employee..."
+                className="w-full pl-10 pr-4 py-2 border border-black rounded-lg shadow-sm focus:outline-none focus:ring-0"
+
+              />
+
+            </div>
+
+
           </div>
+
 
           {/* Summary Cards */}
           {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"> */}
@@ -110,14 +139,15 @@ export default function AdminPage() {
                       Loading...
                     </td>
                   </tr>
-                ) : employees.length === 0 ? (
+                ) : filteredData.length === 0 ? (
+
                   <tr>
                     <td colSpan="4" className="text-center py-6">
                       No attendance records found
                     </td>
                   </tr>
                 ) : (
-                  employees.map((emp) => (
+                  filteredData.map((emp) => (
                     <tr
                       key={emp.id}
                       className="border-b last:border-none hover:bg-gray-50 transition"

@@ -15,6 +15,12 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
   if (!open || !record) return null;
 
   const updateStatus = async () => {
+
+    if (!status) {
+      alert("Please select any one option");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Session expired");
@@ -70,6 +76,7 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
           <option value="Half Leave">Half Leave</option>
           <option value="Absent">Absent</option>
         </select>
+
 
         <div className="flex justify-end gap-3 mt-6">
           <button onClick={onClose} className="px-4 py-2 border rounded-lg">

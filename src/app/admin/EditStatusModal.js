@@ -1,13 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function EditStatusModal({ open, onClose, record, onUpdated }) {
-  const [status, setStatus] = useState(record?.status || "");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setStatus(""); // reset dropdown every time modal opens
+    }
+  }, [open, record]);
+
 
   if (!open) return null;
 
   const updateStatus = async () => {
+
+    if (!status) {
+      alert("Please select any one option");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) return alert("Session expired");
 
@@ -54,10 +67,12 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
           onChange={(e) => setStatus(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         >
+          <option value="">Please select any one option</option>
           <option value="Present">Present</option>
           <option value="Half Leave">Half Leave</option>
           <option value="Absent">Absent</option>
         </select>
+
 
         <div className="flex justify-end gap-3 mt-6">
           <button onClick={onClose} className="px-4 py-2 border rounded-lg">

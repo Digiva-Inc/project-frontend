@@ -5,37 +5,41 @@ import EditStatusModal from "./EditStatusModal";
 
 export default function AdminPage() {
   const [employees, setEmployees] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editRecord, setEditRecord] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   /* =========================
      FETCH RECORDS FROM API
   ========================= */
-    const fetchRecords = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  const fetchRecords = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-      try {
-        const res = await fetch(
-          "http://localhost:5000/api/admin/records",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await res.json();
-
-        if (data.success) {
-          setEmployees(data.data);
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/admin/records",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } catch (err) {
-        console.error("Fetch error", err);
-      } finally {
-        setLoading(false);
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setEmployees(data.data);
+        setFilteredData(data.data); // ✅ for search
       }
-    };
+    } catch (err) {
+      console.error("Fetch error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     fetchRecords();
   }, []);
@@ -52,6 +56,17 @@ export default function AdminPage() {
   const lateArrivals = employees.filter(
     (e) => e.status === "Absent"
   ).length;
+  // ✅ SEARCH FUNCTION
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    const filtered = employees.filter(emp =>
+      emp.name.toLowerCase().includes(value.toLowerCase())
+    );
+
+    setFilteredData(filtered);
+  };
 
   return (
     <>
@@ -61,14 +76,40 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto animate-fadeIn">
 
           {/* Welcome Text */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-extrabold text-gray-900">
-              Welcome Admin 👋
-            </h1>
-            <p className="mt-2 text-lg text-gray-600">
-              Here’s a quick overview of today’s attendance
-            </p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+            {/* Left Side - Welcome Text */}
+            <div>
+              <h1 className="text-4xl font-extrabold text-gray-900">
+                Welcome Admin 👋
+              </h1>
+              <p className="mt-2 text-lg text-gray-600">
+                Here's a quick overview of today’s attendance
+              </p>
+            </div>
+
+            {/* Right Side - Search Box */}
+            <div className="relative w-full md:w-72">
+
+              {/* 🔍 Search Icon */}
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                🔍
+              </span>
+
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Search employee..."
+                className="w-full pl-10 pr-4 py-2 border border-black rounded-lg shadow-sm focus:outline-none focus:ring-0"
+
+              />
+
+            </div>
+
+
           </div>
+
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -96,14 +137,15 @@ export default function AdminPage() {
                       Loading...
                     </td>
                   </tr>
-                ) : employees.length === 0 ? (
+                ) : filteredData.length === 0 ? (
+
                   <tr>
                     <td colSpan="4" className="text-center py-6">
                       No attendance records found
                     </td>
                   </tr>
                 ) : (
-                  employees.map((emp) => (
+                  filteredData.map((emp) => (
                     <tr
                       key={emp.id}
                       className="border-b last:border-none hover:bg-gray-50 transition"
@@ -123,13 +165,13 @@ export default function AdminPage() {
                         </button>
                       </td> */}
                       <td className="p-4">
-                      <button
-                        onClick={() => setEditRecord(emp)}
-                        className="text-blue-600 font-semibold"
-                      >
-                        Edit
-                      </button>
-                    </td>
+                        <button
+                          onClick={() => setEditRecord(emp)}
+                          className="text-blue-600 font-semibold"
+                        >
+                          Edit
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}

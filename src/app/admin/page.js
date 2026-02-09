@@ -10,6 +10,7 @@ export default function AdminPage() {
   const [editRecord, setEditRecord] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+// solve this problem
 
   /* =========================
   FETCH RECORDS FROM API
@@ -56,7 +57,21 @@ export default function AdminPage() {
     (e) => e.status === "Present" || e.status === "Half Leave",
   ).length;
 
-  const lateArrivals = employees.filter((e) => e.status === "Absent").length;
+  const lateArrivals = employees.filter(
+    (e) => e.status === "Absent"
+  ).length;
+
+  // ✅ SEARCH FUNCTION
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    const filtered = employees.filter(emp =>
+      emp.name.toLowerCase().includes(value.toLowerCase())
+    );
+
+    setFilteredData(filtered);
+  };
 
   return (
     <>

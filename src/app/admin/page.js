@@ -40,6 +40,7 @@ export default function AdminPage() {
     fetchRecords();
   }, []);
 
+  // late arrival
   /* =========================
      DASHBOARD COUNTS
   ========================= */

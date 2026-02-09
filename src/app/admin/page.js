@@ -8,6 +8,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [editRecord, setEditRecord] = useState(null);
 
+  //late function
   /* =========================
      FETCH RECORDS FROM API
   ========================= */

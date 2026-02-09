@@ -12,6 +12,7 @@ export default function AdminPage() {
 
 // solve this problem
 
+  //late function
   /* =========================
   FETCH RECORDS FROM API
   ========================= */

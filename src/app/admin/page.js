@@ -46,11 +46,11 @@ export default function AdminPage() {
   const totalEmployees = employees.length;
 
   const presentToday = employees.filter(
-    (e) => e.status === "Present" || e.status === "Half Leave"
+  (e) => e.status === "Present" || e.status === "Half Leave"
   ).length;
 
-  const lateArrivals = employees.filter(
-    (e) => e.status === "Absent"
+  const absentToday = employees.filter(
+  (e) => e.status === "Absent" || e.status === "Auto Absent"
   ).length;
 
   return (
@@ -74,7 +74,7 @@ export default function AdminPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             <DashboardCard title="Total Employees" value={totalEmployees} color="blue" />
             <DashboardCard title="Present Today" value={presentToday} color="green" />
-            <DashboardCard title="Late Arrivals" value={lateArrivals} color="orange" />
+            <DashboardCard title="Absent" value={absentToday} color="orange"/>
           </div>
 
           {/* Attendance Table */}
@@ -180,13 +180,17 @@ function StatusBadge({ status }) {
     return <span className={`${base} bg-green-100 text-green-700`}>Present</span>;
   }
 
-  if (status === "Absent") {
-    return <span className={`${base} bg-yellow-100 text-yellow-700`}>Absent</span>;
-  }
-
   if (status === "Half Leave") {
     return <span className={`${base} bg-orange-100 text-orange-700`}>Half Leave</span>;
   }
 
-  return <span className={`${base} bg-red-100 text-red-700`}>Absent</span>;
+  if (status === "Auto Absent") {
+    return <span className={`${base} bg-red-100 text-red-700`}>Auto Absent</span>;
+  }
+
+  if (status === "Absent") {
+    return <span className={`${base} bg-yellow-100 text-yellow-700`}>Absent</span>;
+  }
+
+  return <span className={`${base} bg-gray-100 text-gray-700`}>{status}</span>;
 }

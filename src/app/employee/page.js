@@ -1,19 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "./navbar";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const name = searchParams.get("user") || "Employee";
-
   const [status, setStatus] = useState(null);
   const [locked, setLocked] = useState(false);
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+  const checkAttendance = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch(
+      "http://localhost:5000/api/attendance/check",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.status) {
+      setStatus(data.status);
+      setTime(data.time);
+      setDate(formatDate(data.isoTime));
+      setLocked(true);
+
+      if (data.autoAbsent) {
+        setMessage("You logged in after 2 PM. Auto Absent marked.");
+      }
+    }
+  };
+
+  checkAttendance();
+}, []);
+
 
   /* ===============================
      HELPERS
@@ -23,6 +54,10 @@ export default function Page() {
     return `${String(d.getDate()).padStart(2, "0")}/${String(
       d.getMonth() + 1
     ).padStart(2, "0")}/${d.getFullYear()}`;
+  };
+   const isAfter2PM = () => {
+   const now = new Date();
+  return now.getHours() >= 14;
   };
 
   /* ===============================
@@ -90,21 +125,20 @@ export default function Page() {
             </p>
 
             <div className="flex justify-center gap-4">
-              <button
-                onClick={() => markAttendance("present")}
-                disabled={locked || loading}
-                className="px-6 py-2 rounded-xl border border-green-400 text-green-700 hover:bg-black hover:text-white disabled:opacity-50"
-              >
-                Present
-              </button>
+             <button onClick={() => markAttendance("present")}
+             disabled={locked || loading }
+             className="px-6 py-2 rounded-xl border border-green-400 text-green-700 hover:bg-black hover:text-white disabled:opacity-50"
+             >
+              Present
+             </button>
 
-              <button
-                onClick={() => markAttendance("absent")}
-                disabled={locked || loading}
-                className="px-6 py-2 rounded-xl border border-red-400 text-red-700 hover:bg-black hover:text-white disabled:opacity-50"
-              >
-                Absent
-              </button>
+             <button onClick={() => markAttendance("absent")}
+             disabled={locked || loading }
+             className="px-6 py-2 rounded-xl border border-red-400 text-red-700 hover:bg-black hover:text-white disabled:opacity-50"
+             >
+              Absent
+             </button>
+
             </div>
 
             {locked && (
@@ -141,3 +175,4 @@ export default function Page() {
     </div>
   );
 }
+

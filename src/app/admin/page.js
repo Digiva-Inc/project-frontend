@@ -62,6 +62,7 @@ export default function AdminPage() {
   const absentToday = employees.filter(
   (e) => e.status === "Absent" || e.status === "Auto Absent"
   ).length;
+  //check
 
   // ✅ SEARCH FUNCTION
   const handleSearch = (e) => {
@@ -223,7 +224,7 @@ export default function AdminPage() {
 /* =========================
    COMPONENTS (UNCHANGED)
 ========================= */
-
+//no late
 function DashboardCard({ title, value, color }) {
   const colors = {
     blue: "text-blue-600 bg-blue-50",

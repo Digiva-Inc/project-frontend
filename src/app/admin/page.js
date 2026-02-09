@@ -57,8 +57,8 @@ export default function AdminPage() {
     (e) => e.status === "Present" || e.status === "Half Leave",
   ).length;
 
-  const lateArrivals = employees.filter(
-    (e) => e.status === "Absent"
+  const absentToday = employees.filter(
+  (e) => e.status === "Absent" || e.status === "Auto Absent"
   ).length;
 
   // ✅ SEARCH FUNCTION
@@ -268,5 +268,13 @@ function StatusBadge({ status }) {
     );
   }
 
-  return <span className={`${base} bg-red-100 text-red-700`}>Absent</span>;
+  if (status === "Auto Absent") {
+    return <span className={`${base} bg-red-100 text-red-700`}>Auto Absent</span>;
+  }
+
+  if (status === "Absent") {
+    return <span className={`${base} bg-yellow-100 text-yellow-700`}>Absent</span>;
+  }
+
+  return <span className={`${base} bg-gray-100 text-gray-700`}>{status}</span>;
 }

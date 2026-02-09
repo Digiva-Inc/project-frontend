@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function Navbar() {
+export default function Navbar({ onSort }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 

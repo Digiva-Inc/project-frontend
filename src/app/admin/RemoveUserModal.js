@@ -130,3 +130,4 @@ export default function RemoveUserModal({ open, setOpen }) {
     </div>
   );
 }
+

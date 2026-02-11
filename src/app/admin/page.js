@@ -10,6 +10,8 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
   /* =========================
      FETCH RECORDS FROM API
   ========================= */
@@ -19,7 +21,7 @@ export default function AdminPage() {
 
       try {
         const res = await fetch(
-          "http://localhost:5000/api/admin/records",
+          `${API_BASE}/admin/records`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

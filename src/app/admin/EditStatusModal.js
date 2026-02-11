@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 export default function EditStatusModal({ open, onClose, record, onUpdated }) {
   const [status, setStatus] = useState("selected items");
   const [loading, setLoading] = useState(false);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 
   // 🔑 ALWAYS bind dropdown to SELECTED RECORD ROLE
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/update-status/${record.id}`,
+        `${API_BASE}/admin/update-status/${record.id}`,
         {
           method: "PUT",
           headers: {

@@ -17,11 +17,11 @@ export default function SplashScreen({ fadeOut }) {
         className={`animate-logo-zoom
 
           */ Responsive base size */
-          w-24 h-24        /* mobile */
-          sm:w-28 sm:h-28  /* large mobile */
-          md:w-32 md:h-32  /* tablet */
-          lg:w-36 lg:h-36  /* laptop */
-          xl:w-40 xl:h-40  /* large screens */
+          w-32 h-32        /* mobile */
+          sm:w-36 sm:h-36  /* large mobile */
+          md:w-44 md:h-44  /* tablet */
+          lg:w-48 lg:h-48 /* laptop */
+          xl:w-52 xl:h-52  /* large screens */
 
           object-contain
         `}

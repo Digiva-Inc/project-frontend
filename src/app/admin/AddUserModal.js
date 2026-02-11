@@ -155,3 +155,4 @@ export default function AddUserModal({ open, setOpen }) {
     </div>
   );
 }
+

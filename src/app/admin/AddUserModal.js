@@ -9,6 +9,8 @@ export default function AddUserModal({ open, setOpen }) {
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 
   /* =========================
      ESC CLOSE
@@ -36,7 +38,7 @@ export default function AddUserModal({ open, setOpen }) {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/admin/register",
+        `${API_BASE}/admin/register`,
         {
           method: "POST",
           headers: {

@@ -11,20 +11,35 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
-  /* ===== FETCH RECORDS (ORIGINAL LOGIC) ===== */
-  const fetchRecords = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-    try {
-      const res = await fetch("http://localhost:5000/api/admin/records", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  /* =========================
+     FETCH RECORDS FROM API
+  ========================= */
+    const fetchRecords = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-      const data = await res.json();
-      if (data.success) {
-        setEmployees(data.data);
-        setFilteredData(data.data);
+      try {
+        const res = await fetch(
+          `${API_BASE}/admin/records`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+          setEmployees(data.data);
+          setFilteredData(data.data);
+        }
+      } catch (err) {
+        console.error("Fetch error", err);
+      } finally {
+        setLoading(false);
       }
     } finally {
       setLoading(false);

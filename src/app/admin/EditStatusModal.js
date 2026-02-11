@@ -71,7 +71,6 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
           onChange={(e) => setStatus(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         >
-        <option value="">Select Status</option>
           <option value="Present">Present</option>
           <option value="Half Leave">Half Leave</option>
           <option value="Absent">Absent</option>

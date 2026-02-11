@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import EditStatusModal from "./EditStatusModal";
+import * as XLSX from "xlsx";
 
 export default function AdminPage() {
   const [employees, setEmployees] = useState([]);
@@ -62,6 +63,123 @@ export default function AdminPage() {
     });
   };
 
+  // XLSX
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
+  // // ✅ Extract date from row
+  // const getRowDate = (dateTime) =>
+  //   new Date(dateTime).toISOString().split("T")[0];
+
+  // // ✅ Check if date is locked (exported)
+  // const isDateLocked = (date) => {
+  //   const exportedDates =
+  //     JSON.parse(localStorage.getItem("attendance_exported_dates")) || [];
+  //   return exportedDates.includes(date);
+  // };
+
+  // ✅ Fetch attendance from backend by selected date
+  const fetchAttendanceByDate = async (date) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return [];
+
+      const res = await fetch(
+        `http://localhost:5000/api/admin/records-by-date?date=${date}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) {
+        console.error("Fetch failed:", data.message);
+        return [];
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      return [];
+    }
+  };
+
+
+
+
+  const exportDateWiseExcel = async () => {
+    const records = await fetchAttendanceByDate(selectedDate);
+
+    if (!records || records.length === 0) {
+      alert(`No attendance found for ${selectedDate}`);
+      return;
+    }
+
+    const excelData = records.map((emp, index) => ({
+      No: index + 1,
+      "Employee Name": emp.name,
+      "Arrival Time": new Date(emp.login_time).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+      Status: emp.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Column widths (fix header overlap)
+    worksheet["!cols"] = [
+      { wch: 6 },
+      { wch: 20 },
+      { wch: 22 },
+      { wch: 14 },
+    ];
+
+    // 🔒 Lock all cells
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    for (let r = range.s.r; r <= range.e.r; r++) {
+      for (let c = range.s.c; c <= range.e.c; c++) {
+        const ref = XLSX.utils.encode_cell({ r, c });
+        if (!worksheet[ref]) continue;
+        worksheet[ref].s = { protection: { locked: true } };
+      }
+    }
+
+    // 🔒 Protect sheet
+    worksheet["!protect"] = {
+      password: "attendance-lock",
+      selectLockedCells: false,
+      selectUnlockedCells: false,
+    };
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+    XLSX.writeFile(workbook, `Attendance_${selectedDate}.xlsx`);
+
+    // 🔒 Save export lock (frontend)
+    const exportedDates =
+      JSON.parse(localStorage.getItem("attendance_exported_dates")) || [];
+
+    if (!exportedDates.includes(selectedDate)) {
+      exportedDates.push(selectedDate);
+      localStorage.setItem(
+        "attendance_exported_dates",
+        JSON.stringify(exportedDates)
+      );
+    }
+  };
+
+
+
   return (
     <>
       <Navbar />
@@ -115,10 +233,34 @@ export default function AdminPage() {
           </div>
 
           {/* DASHBOARD CARDS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
             <Card title="TOTAL EMPLOYEES" value={employees.length} color="blue" />
             <Card title="PRESENT TODAY" value={presentToday} color="green" />
             <Card title="ABSENT" value={absentToday} color="orange" />
+          </div>
+
+          {/* xlsx */}
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-end mb-4">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm"
+            />
+
+            <button
+              onClick={exportDateWiseExcel}
+              className="
+                px-4 py-2
+                text-sm font-medium
+                border border-gray-300
+                rounded-lg
+               bg-green-600 text-white
+                "
+            >
+              Export
+            </button>
           </div>
 
           {/* ===== Attendance Table ===== */}
@@ -152,7 +294,7 @@ export default function AdminPage() {
             "
                     >
 
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-3">
                         <div className="flex items-center gap-3">
                           {/* Avatar */}
                           <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700
@@ -203,16 +345,16 @@ export default function AdminPage() {
 
                       {/* Action */}
                       <td className="px-6 py-5 text-right">
+
                         <button
                           onClick={() => setEditRecord(emp)}
-                          className="
-                  text-sm font-medium
-                  text-blue-600
-                  hover:text-blue-800
-                "
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800"
                         >
                           Edit
                         </button>
+
+
+
                       </td>
                     </tr>
                   ))}

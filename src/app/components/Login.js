@@ -11,6 +11,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch(`${API_BASE}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,6 +99,16 @@ export default function Login() {
           {error && (
             <p className="text-red-500 text-sm text-center">{error}</p>
           )}
+
+          {/* ✅ FORGOT PASSWORD ADDED (ONLY NEW PART) */}
+          <p className="text-right text-sm">
+            <span
+              onClick={() => router.push("/forgot-password")}
+              className="text-blue-600 cursor-pointer hover:underline"
+            >
+              Forgot Password?
+            </span>
+          </p>
 
           <button
             type="submit"

@@ -5,6 +5,8 @@ export default function RemoveUserModal({ open, setOpen }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 
   /* ===============================
      FETCH USERS
@@ -18,7 +20,7 @@ export default function RemoveUserModal({ open, setOpen }) {
 
       try {
         const res = await fetch(
-          "http://localhost:5000/api/admin/users",
+          `${API_BASE}/admin/users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

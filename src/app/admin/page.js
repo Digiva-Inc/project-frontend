@@ -15,6 +15,7 @@ export default function AdminPage() {
   /* =========================
      FETCH RECORDS FROM API
   ========================= */
+  // Use THis function to fetch records after editing or on page load
     const fetchRecords = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;

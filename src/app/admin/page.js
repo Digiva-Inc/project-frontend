@@ -41,10 +41,8 @@ export default function AdminPage() {
       } finally {
         setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    } 
+  ;
 
   useEffect(() => {
     fetchRecords();

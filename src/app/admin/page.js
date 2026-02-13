@@ -274,7 +274,7 @@ export default function AdminPage() {
           {/* ===== Attendance Table ===== */}
           <div className="mt-10 bg-white rounded-xl border border-gray-200 overflow-hidden cursor-default">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px]">
+              <table className="w-full min-w-175">
                 <thead className="bg-gray-200">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">

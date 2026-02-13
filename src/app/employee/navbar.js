@@ -58,10 +58,8 @@ export default function Navbar({ onSort }) {
         {open && (
           <div
             className={` fixed
-              top-[72px]
+              top-[68px]
               right-4
-              z-50
-              w-44
               bg-white
               shadow-lg
               rounded-lg`}
@@ -72,9 +70,10 @@ export default function Navbar({ onSort }) {
   block w-full text-left
   px-4 py-3 rounded-md
   transition
-  hover:bg-black hover:text-white
-  active:bg-black active:text-white
-  focus:bg-black focus:text-white
+  bg-black text-white
+  // hover:bg-black hover:text-white
+  // active:bg-black active:text-white
+  // focus:bg-black focus:text-white
   focus-visible:outline-none
 "
 

@@ -89,9 +89,9 @@ export default function RemoveUserModal({ open, setOpen }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
-        <h2 className="text-2xl font-bold mb-2">Remove User</h2>
-        <p className="text-gray-600 mb-4">
+      <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 cursor-default">
+        <h2 className="text-2xl font-bold mb-2 ">Remove User</h2>
+        <p className="text-gray-600 mb-4 ">
           Select a user to remove from the system
         </p>
 
@@ -111,7 +111,7 @@ export default function RemoveUserModal({ open, setOpen }) {
                 <button
                   disabled={loading}
                   onClick={() => deleteUser(user.id, user.name)}
-                  className="text-red-600 hover:text-red-800 font-semibold disabled:opacity-50"
+                  className="text-red-600  font-semibold disabled:opacity-50"
                 >
                   Remove
                 </button>
@@ -123,7 +123,7 @@ export default function RemoveUserModal({ open, setOpen }) {
         <div className="flex justify-end mt-6">
           <button
             onClick={() => setOpen(false)}
-            className="px-5 py-2 border rounded-lg"
+            className="px-5 py-2 border rounded-lg bg-black text-white  "
           >
             Close
           </button>

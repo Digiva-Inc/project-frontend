@@ -16,33 +16,33 @@ export default function AdminPage() {
   /* =========================
      FETCH RECORDS FROM API
   ========================= */
-    const fetchRecords = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  const fetchRecords = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-      try {
-        const res = await fetch(
-          `${API_BASE}/admin/records`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await res.json();
-
-        if (data.success) {
-          setEmployees(data.data);
-          setFilteredData(data.data);
+    try {
+      const res = await fetch(
+        `${API_BASE}/admin/records`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } catch (err) {
-        console.error("Fetch error", err);
-      } finally {
-        setLoading(false);
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setEmployees(data.data);
+        setFilteredData(data.data);
       }
-    } 
-  ;
+    } catch (err) {
+      console.error("Fetch error", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+    ;
 
   useEffect(() => {
     fetchRecords();
@@ -53,9 +53,16 @@ export default function AdminPage() {
     const value = e.target.value;
     setSearchTerm(value);
 
+    if (!value) {
+      setFilteredData(employees);
+      return;
+    }
+
     setFilteredData(
       employees.filter((emp) =>
-        emp.name.toLowerCase().includes(value.toLowerCase())
+        emp.name
+          .toLowerCase()
+          .startsWith(value.toLowerCase()) // ✅ FIRST LETTER ONLY
       )
     );
   };
@@ -81,18 +88,6 @@ export default function AdminPage() {
     new Date().toISOString().split("T")[0]
   );
 
-  // // ✅ Extract date from row
-  // const getRowDate = (dateTime) =>
-  //   new Date(dateTime).toISOString().split("T")[0];
-
-  // // ✅ Check if date is locked (exported)
-  // const isDateLocked = (date) => {
-  //   const exportedDates =
-  //     JSON.parse(localStorage.getItem("attendance_exported_dates")) || [];
-  //   return exportedDates.includes(date);
-  // };
-
-  // ✅ Fetch attendance from backend by selected date
   const fetchAttendanceByDate = async (date) => {
     try {
       const token = localStorage.getItem("token");
@@ -203,8 +198,8 @@ export default function AdminPage() {
           {/* HEADER */}
           <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold">Welcome Admin 👋</h1>
-              <p className="text-gray-500">
+              <h1 className="text-3xl font-bold cursor-default">Welcome Admin 👋</h1>
+              <p className="text-gray-500 cursor-default">
                 Here's a quick overview of today’s attendance
               </p>
             </div>
@@ -246,7 +241,7 @@ export default function AdminPage() {
           </div>
 
           {/* DASHBOARD CARDS */}
-          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 cursor-default">
             <Card title="TOTAL EMPLOYEES" value={employees.length} color="blue" />
             <Card title="PRESENT TODAY" value={presentToday} color="green" />
             <Card title="ABSENT" value={absentToday} color="orange" />
@@ -277,7 +272,7 @@ export default function AdminPage() {
           </div>
 
           {/* ===== Attendance Table ===== */}
-          <div className="mt-10 bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="mt-10 bg-white rounded-xl border border-gray-200 overflow-hidden cursor-default">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px]">
                 <thead className="bg-gray-200">

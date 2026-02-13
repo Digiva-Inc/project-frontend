@@ -10,7 +10,17 @@ export default function AddUserModal({ open, setOpen }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+    const mobileRegex = /^[6-9]\d{9}$/;
 
+const handleMobileChange = (e) => {
+  const value = e.target.value;
+
+          // Allow only digits
+          if (/^\d*$/.test(value)) {
+            setMobile(value);
+  }
+};
+const isMobileValid = mobileRegex.test(mobile);
 
   /* =========================
      ESC CLOSE
@@ -89,7 +99,7 @@ export default function AddUserModal({ open, setOpen }) {
       />
 
       <div className="relative bg-white w-full max-w-lg rounded-2xl p-8">
-        <h2 className="text-2xl font-bold mb-4">Register New User</h2>
+        <h2 className="text-2xl font-bold mb-4 cursor-default">Register New User</h2>
 
         {error && <p className="text-red-600 mb-3">{error}</p>}
 
@@ -101,12 +111,25 @@ export default function AddUserModal({ open, setOpen }) {
             onChange={(e) => setUsername(e.target.value)}
           />
 
+        
+
           <input
+            type="tel"
             placeholder="Mobile"
-            className="w-full border px-4 py-2 rounded-xl"
+            maxLength={10}
+            className={`w-full border px-4 py-2 rounded-xl ${mobile && !isMobileValid ? "border-red-500" : "border-gray-300"
+              }`}
             value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
+            onChange={handleMobileChange}
           />
+
+          {/* Error Message */}
+          {mobile && !isMobileValid && (
+            <p className="text-red-500 text-sm mt-1">
+              Enter valid 10-digit mobile number
+            </p>
+          )}
+
 
           <input
             placeholder="Email"

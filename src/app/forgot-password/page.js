@@ -36,16 +36,16 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow w-full max-w-sm">
-        <h2 className="text-xl font-bold text-center mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm sm:p-8">
+        <h2 className="text-xl font-bold text-center mb-6 sm:text-2xl text-black cursor-default">
           Forgot Password
         </h2>
 
         <input
           type="email"
-          placeholder="Enter email"
-          className="w-full border px-3 py-2 rounded mb-4"
+          placeholder="Email"
+          className="w-full border px-3 py-2 rounded-md mb-4 focus:ring-1 focus:ring-black outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
         <button
           onClick={sendOtp}
           disabled={loading}
-          className="w-full bg-black text-white py-2 rounded"
+          className="w-1/3 block mx-auto bg-black text-white py-2 rounded-md"
         >
           {loading ? "Sending..." : "Send OTP"}
         </button>

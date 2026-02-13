@@ -74,10 +74,10 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow w-full max-w-sm">
-
-        <h2 className="text-xl font-bold text-center mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm sm:p-8">
+    
+        <h2 className="text-xl font-bold text-center mb-6 sm:text-2xl text-black cursor-default">
           Reset Password
         </h2>
 
@@ -88,7 +88,7 @@ export default function ResetPassword() {
         <input
           type="password"
           placeholder="New Password"
-          className="w-full border px-3 py-2 rounded mb-3"
+          className="w-full border px-3 py-2 rounded mb-4 focus:ring-1 focus:ring-black outline-none"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -96,7 +96,7 @@ export default function ResetPassword() {
         <input
           type="password"
           placeholder="Confirm Password"
-          className="w-full border px-3 py-2 rounded mb-4"
+          className="w-full border px-3 py-2 rounded mb-4 focus:ring-1 focus:ring-black outline-none"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
         />
@@ -104,7 +104,7 @@ export default function ResetPassword() {
         <button
           onClick={resetPassword}
           disabled={loading}
-          className="w-full bg-black text-white py-2 rounded"
+          className="w-1/2 block mx-auto bg-black text-white py-2 rounded-md"
         >
           {loading ? "Saving..." : "Reset Password"}
         </button>

@@ -62,7 +62,7 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div onClick={onClose} className="absolute inset-0 bg-black/50" />
 
-      <div className="relative bg-white rounded-xl p-6 w-full max-w-sm">
+      <div className="relative bg-white rounded-xl p-6 w-full max-w-sm cursor-default">
         <h2 className="text-xl font-bold mb-4">
           Update Attendance Status
         </h2>

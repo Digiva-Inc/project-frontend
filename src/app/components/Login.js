@@ -56,9 +56,10 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center bg-gray-100 justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-        <h1 className="text-xl sm:text-2xl text-black font-bold text-center mb-6">
+        <h1 className="text-xl sm:text-2xl text-black font-bold text-center mb-6 cursor-default">
           Login
         </h1>
+
 
         <form className="space-y-4" onSubmit={handleLogin}>
           {/* Email */}
@@ -67,7 +68,7 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 text-black border rounded-md focus:ring-2 focus:ring-black outline-none"
+            className="w-full px-4 py-3 text-black border rounded-md focus:ring-1 focus:ring-black outline-none"
             required
           />
 
@@ -78,7 +79,7 @@ export default function Login() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 pr-14 text-black border rounded-md focus:ring-2 focus:ring-black outline-none"
+              className="w-full px-4 py-3 pr-14 text-black border rounded-md focus:ring-1 focus:ring-black outline-none"
               required
             />
 
@@ -113,7 +114,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="mx-auto block w-1/3 bg-black text-white rounded-lg py-2 hover:bg-gray-800 transition disabled:opacity-50"
+            className="mx-auto block w-1/3 bg-black text-white rounded-lg py-2 transition disabled:opacity-50"
           >
             {loading ? "..." : "Login"}
           </button>

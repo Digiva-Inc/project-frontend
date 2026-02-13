@@ -60,11 +60,11 @@ export default function VerifyOtp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
 
-      <div className="bg-white p-6 rounded-xl shadow w-full max-w-sm">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm sm:p-8">
 
-        <h2 className="text-xl font-bold text-center mb-4">
+        <h2 className="text-xl font-bold text-center mb-6 sm:text-2xl text-black cursor-default">
           Verify OTP
         </h2>
 
@@ -75,7 +75,8 @@ export default function VerifyOtp() {
         <input
           type="text"
           placeholder="Enter OTP"
-          className="w-full border px-3 py-2 rounded mb-4"
+          className="w-full border px-3 py-2 rounded-md focus:ring-1 focus:ring-black outline-none
+           mb-4"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
         />
@@ -83,7 +84,7 @@ export default function VerifyOtp() {
         <button
           onClick={verifyOtp}
           disabled={loading}
-          className="w-full bg-black text-white py-2 rounded"
+          className="w-1/3 block mx-auto bg-black text-white py-2 rounded-md"
         >
           {loading ? "Verifying..." : "Verify OTP"}
         </button>

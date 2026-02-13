@@ -146,7 +146,7 @@ export default function Page() {
     <div className="min-h-screen bg-gray-100">
       <Navbar />
 
-      <div className="flex items-center justify-center px-4 py-10">
+      <div className="flex items-center justify-center px-4 py-10 cursor-default">
         <div className="w-full max-w-4xl bg-white rounded-3xl shadow-md p-6 sm:p-10 space-y-10">
           <h1 className="text-3xl font-semibold">
             Welcome, <span className="font-bold">{name}</span>
@@ -161,7 +161,7 @@ export default function Page() {
               <button
                 onClick={() => markAttendance("present")}
                 disabled={locked || loading}
-                className="px-6 py-2 rounded-xl border border-green-400 text-green-700 hover:bg-black hover:text-white disabled:opacity-50"
+                className="px-6 py-2 rounded-xl border border-green-400 text-green-700 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed "
               >
                 Present
               </button>
@@ -169,7 +169,7 @@ export default function Page() {
               <button
                 onClick={() => markAttendance("absent")}
                 disabled={locked || loading}
-                className="px-6 py-2 rounded-xl border border-red-400 text-red-700 hover:bg-black hover:text-white disabled:opacity-50"
+                className="px-6 py-2 rounded-xl border border-red-400 text-red-700 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Absent
               </button>

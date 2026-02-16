@@ -2,6 +2,11 @@
 import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import EditStatusModal from "./EditStatusModal";
+<<<<<<< Updated upstream
+=======
+import * as XLSX from "xlsx";
+import { useRouter } from "next/navigation";
+>>>>>>> Stashed changes
 
 export default function AdminPage() {
   const [employees, setEmployees] = useState([]);
@@ -12,9 +17,34 @@ export default function AdminPage() {
 
 // solve this problem
 
+<<<<<<< Updated upstream
   /* =========================
   FETCH RECORDS FROM API
   ========================= */
+=======
+  // Validation For Role of User || Admin
+  const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      alert("Please login first");
+      router.push("/login");
+      return;
+    }
+
+    if (role !== "Admin") {
+      router.push("/"); 
+      alert("Access denied. Only Admin can access this page.");
+      return
+    }
+
+  }, [router]);
+
+
+// Fetch all Records
+>>>>>>> Stashed changes
   const fetchRecords = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;

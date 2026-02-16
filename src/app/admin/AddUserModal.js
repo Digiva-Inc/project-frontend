@@ -148,6 +148,7 @@
 
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AddUserModal({ open, setOpen }) {
   const [username, setUsername] = useState("");
@@ -157,6 +158,44 @@ export default function AddUserModal({ open, setOpen }) {
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+  const mobileRegex = /^[6-9]\d{9}$/;
+
+  const handleMobileChange = (e) => {
+    const value = e.target.value;
+
+    // Allow only digits
+    if (/^\d*$/.test(value)) {
+      setMobile(value);
+    }
+  };
+  const isMobileValid = mobileRegex.test(mobile);
+
+
+  // Validation For Role of User || Admin
+  const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      alert("Please login first");
+      router.push("/login");
+      return;
+    }
+
+    if (role !== "Admin") {
+      router.push("/");
+      alert("Access denied. Only Admin can access this page.");
+      return
+    }
+
+  }, [router]);
+
+
+>>>>>>> Stashed changes
 
   /* =========================
      ESC CLOSE
@@ -247,9 +286,20 @@ export default function AddUserModal({ open, setOpen }) {
             onChange={(e) => setUsername(e.target.value)}
           />
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
           <input
             placeholder="Mobile"
+<<<<<<< Updated upstream
             className="w-full border px-4 py-2 rounded-xl"
+=======
+            maxLength={10}
+            className={`w-full border px-4 py-2 rounded-xl ${mobile && !isMobileValid ? "border-red-500" : ""
+              }`}
+>>>>>>> Stashed changes
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
           />

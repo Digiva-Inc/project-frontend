@@ -1,14 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import AddUserModal from "./AddUserModal";
 import RemoveUserModal from "./RemoveUserModal";
+import { useRouter } from "next/navigation";
+
 
 export default function Navbar() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [addOpen, setAddOpen] = useState(false);
     const [removeOpen, setRemoveOpen] = useState(false);
 
+<<<<<<< Updated upstream
     return (
         <>
             <nav className="bg-white shadow px-8 py-4 flex justify-between items-center relative">
@@ -16,6 +19,34 @@ export default function Navbar() {
                 <div className="flex items-center gap-4">
                     <Image src="/digiva.png" alt="Logo" width={150} height={100} />
                 </div>
+=======
+  // Validation For Role of User || Admin
+  const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      alert("Please login first");
+      router.push("/login");
+      return;
+    }
+
+    if (role !== "Admin") {
+      router.push("/"); 
+      alert("Access denied. Only Admin can access this page.");
+      return
+    }
+
+  }, [router]);
+
+  /* === SHARED ACTIONS (IMPORTANT) === */
+  const openAddUser = () => {
+    setAddOpen(true);
+    setDropdownOpen(false);
+    setMobileOpen(false);
+  };
+>>>>>>> Stashed changes
 
                 {/* Manage User Dropdown */}
                 <div className="relative">

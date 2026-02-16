@@ -98,6 +98,19 @@ export default function Login() {
             <p className="text-red-500 text-sm text-center">{error}</p>
           )}
 
+<<<<<<< Updated upstream
+=======
+          {/* ✅ FORGOT PASSWORD ADDED (ONLY NEW PART) */}
+          <p className="text-right text-sm">
+            <span
+              onClick={() => router.push("/forgot-password")}
+              className="text-black cursor-pointer "
+            >
+              Forgot Password?
+            </span>
+          </p>
+
+>>>>>>> Stashed changes
           <button
             type="submit"
             disabled={loading}

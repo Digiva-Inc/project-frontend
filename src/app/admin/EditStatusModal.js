@@ -1,9 +1,31 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function EditStatusModal({ open, onClose, record, onUpdated }) {
   const [status, setStatus] = useState("selected items");
   const [loading, setLoading] = useState(false);
+
+  // Validation For Role of User || Admin
+    const router = useRouter();
+  
+    useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      alert("Please login first");
+      router.push("/login");
+      return;
+    }
+
+    if (role !== "Admin") {
+      router.push("/"); 
+      alert("Access denied. Only Admin can access this page.");
+      return
+    }
+
+  }, [router]);
+
 
   // 🔑 ALWAYS bind dropdown to SELECTED RECORD ROLE
   useEffect(() => {

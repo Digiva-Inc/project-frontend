@@ -94,7 +94,7 @@ export default function AdminPage() {
       if (!token) return [];
 
       const res = await fetch(
-        `http://localhost:5000/api/admin/records-by-date?date=${date}`,
+        `${API_BASE}/admin/records-by-date?date=${date}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

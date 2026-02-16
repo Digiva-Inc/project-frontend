@@ -53,7 +53,7 @@ export default function RemoveUserModal({ open, setOpen }) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/delete-user/${userId}`,
+        `${API_BASE}/admin/delete-user/${userId}`,
         {
           method: "DELETE",
           headers: {

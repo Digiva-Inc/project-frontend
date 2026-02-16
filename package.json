@@ -13,7 +13,12 @@
     "postcss": "^8.5.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
     "xlsx": "^0.18.5"
+
+    "react-dom": "^18.3.1",
+    "xlsx": "^0.18.5"
+
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

@@ -1,8 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import AddUserModal from "./AddUserModal";
 import RemoveUserModal from "./RemoveUserModal";
+import { useRouter } from "next/navigation";
+
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -10,12 +12,33 @@ export default function Navbar() {
   const [addOpen, setAddOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
 
+  // Validation For Role of User || Admin
+  const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      alert("Please login first");
+      router.push("/login");
+      return;
+    }
+
+    if (role !== "Admin") {
+      router.push("/"); 
+      alert("Access denied. Only Admin can access this page.");
+      return
+    }
+
+  }, [router]);
+
   /* === SHARED ACTIONS (IMPORTANT) === */
   const openAddUser = () => {
     setAddOpen(true);
     setDropdownOpen(false);
     setMobileOpen(false);
   };
+
 
   const openRemoveUser = () => {
     setRemoveOpen(true);

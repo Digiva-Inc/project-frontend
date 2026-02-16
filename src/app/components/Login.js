@@ -11,6 +11,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch(`${API_BASE}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,9 +56,10 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center bg-gray-100 justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-        <h1 className="text-xl sm:text-2xl text-black font-bold text-center mb-6">
+        <h1 className="text-xl sm:text-2xl text-black font-bold text-center mb-6 cursor-default">
           Login
         </h1>
+
 
         <form className="space-y-4" onSubmit={handleLogin}>
           {/* Email */}
@@ -65,7 +68,7 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 text-black border rounded-md focus:ring-2 focus:ring-black outline-none"
+            className="w-full px-4 py-3 text-black border rounded-md focus:ring-1 focus:ring-black outline-none"
             required
           />
 
@@ -76,7 +79,7 @@ export default function Login() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 pr-14 text-black border rounded-md focus:ring-2 focus:ring-black outline-none"
+              className="w-full px-4 py-3 pr-14 text-black border rounded-md focus:ring-1 focus:ring-black outline-none"
               required
             />
 
@@ -98,23 +101,20 @@ export default function Login() {
             <p className="text-red-500 text-sm text-center">{error}</p>
           )}
 
-<<<<<<< Updated upstream
-=======
           {/* ✅ FORGOT PASSWORD ADDED (ONLY NEW PART) */}
           <p className="text-right text-sm">
             <span
               onClick={() => router.push("/forgot-password")}
-              className="text-black cursor-pointer "
+              className="text-blue-600 cursor-pointer hover:underline"
             >
               Forgot Password?
             </span>
           </p>
 
->>>>>>> Stashed changes
           <button
             type="submit"
             disabled={loading}
-            className="mx-auto block w-1/3 bg-black text-white rounded-lg py-2 hover:bg-gray-800 transition disabled:opacity-50"
+            className="mx-auto block w-1/3 bg-black text-white rounded-lg py-2 transition disabled:opacity-50"
           >
             {loading ? "..." : "Login"}
           </button>

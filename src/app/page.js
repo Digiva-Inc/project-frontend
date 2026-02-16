@@ -7,6 +7,7 @@ import Login from "./components/Login";
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [fadeSplash, setFadeSplash] = useState(false);
+  
 
   useEffect(() => {
     // Start fade-out after 2s

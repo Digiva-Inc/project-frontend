@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export default function EditStatusModal({ open, onClose, record, onUpdated }) {
   const [status, setStatus] = useState("selected items");
   const [loading, setLoading] = useState(false);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 
   // Validation For Role of User || Admin
     const router = useRouter();
@@ -53,7 +55,7 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/update-status/${record.id}`,
+        `${API_BASE}/admin/update-status/${record.id}`,
         {
           method: "PUT",
           headers: {
@@ -82,7 +84,7 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div onClick={onClose} className="absolute inset-0 bg-black/50" />
 
-      <div className="relative bg-white rounded-xl p-6 w-full max-w-sm">
+      <div className="relative bg-white rounded-xl p-6 w-full max-w-sm cursor-default">
         <h2 className="text-xl font-bold mb-4">
           Update Attendance Status
         </h2>
@@ -93,7 +95,6 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
           onChange={(e) => setStatus(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         >
-        <option value="">Select Status</option>
           <option value="Present">Present</option>
           <option value="Half Leave">Half Leave</option>
           <option value="Absent">Absent</option>

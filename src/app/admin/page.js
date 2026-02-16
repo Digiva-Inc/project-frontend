@@ -2,26 +2,20 @@
 import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import EditStatusModal from "./EditStatusModal";
-<<<<<<< Updated upstream
-=======
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
->>>>>>> Stashed changes
+import * as XLSX from "xlsx";
+
 
 export default function AdminPage() {
   const [employees, setEmployees] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [editRecord, setEditRecord] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
-// solve this problem
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-<<<<<<< Updated upstream
-  /* =========================
-  FETCH RECORDS FROM API
-  ========================= */
-=======
   // Validation For Role of User || Admin
   const router = useRouter();
 
@@ -44,201 +38,367 @@ export default function AdminPage() {
 
 
 // Fetch all Records
->>>>>>> Stashed changes
   const fetchRecords = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/admin/records", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `${API_BASE}/admin/records`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await res.json();
 
       if (data.success) {
         setEmployees(data.data);
+        setFilteredData(data.data);
       }
     } catch (err) {
       console.error("Fetch error", err);
     } finally {
       setLoading(false);
     }
-  };
+  }
+    ;
 
   useEffect(() => {
     fetchRecords();
-
-    const interval = setInterval(() => {
-      fetchRecords();
-    }, 10000); // refresh every 10 seconds
-
-    return () => clearInterval(interval);
   }, []);
 
-  /* =========================
-     DASHBOARD COUNTS
-  ========================= */
-  const totalEmployees = employees.length;
-
-  const presentToday = employees.filter(
-    (e) => e.status === "Present" || e.status === "Half Leave",
-  ).length;
-
-  const lateArrivals = employees.filter(
-    (e) => e.status === "Absent"
-  ).length;
-
-  // ✅ SEARCH FUNCTION
+  /* ===== SEARCH ===== */
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    const filtered = employees.filter(emp =>
-      emp.name.toLowerCase().includes(value.toLowerCase())
-    );
+    if (!value) {
+      setFilteredData(employees);
+      return;
+    }
 
-    setFilteredData(filtered);
+    setFilteredData(
+      employees.filter((emp) =>
+        emp.name
+          .toLowerCase()
+          .startsWith(value.toLowerCase()) // ✅ FIRST LETTER ONLY
+      )
+    );
   };
+
+  const presentToday = employees.filter(
+    (e) => e.status === "Present" || e.status === "Half Leave"
+  ).length;
+
+  const absentToday = employees.filter(
+    (e) => e.status === "Absent" || e.status === "Auto Absent"
+  ).length;
+
+  const formatDateTime = (dateString) => {
+    const d = new Date(dateString);
+    return d.toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    });
+  };
+
+  // XLSX
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
+  const fetchAttendanceByDate = async (date) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return [];
+
+      const res = await fetch(
+        `${API_BASE}/admin/records-by-date?date=${date}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) {
+        console.error("Fetch failed:", data.message);
+        return [];
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      return [];
+    }
+  };
+
+
+
+
+  const exportDateWiseExcel = async () => {
+    const records = await fetchAttendanceByDate(selectedDate);
+
+    if (!records || records.length === 0) {
+      alert(`No attendance found for ${selectedDate}`);
+      return;
+    }
+
+    const excelData = records.map((emp, index) => ({
+      No: index + 1,
+      "Employee Name": emp.name,
+      "Arrival Time": new Date(emp.login_time).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+      Status: emp.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Column widths (fix header overlap)
+    worksheet["!cols"] = [
+      { wch: 6 },
+      { wch: 20 },
+      { wch: 22 },
+      { wch: 14 },
+    ];
+
+    // 🔒 Lock all cells
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    for (let r = range.s.r; r <= range.e.r; r++) {
+      for (let c = range.s.c; c <= range.e.c; c++) {
+        const ref = XLSX.utils.encode_cell({ r, c });
+        if (!worksheet[ref]) continue;
+        worksheet[ref].s = { protection: { locked: true } };
+      }
+    }
+
+    // 🔒 Protect sheet
+    worksheet["!protect"] = {
+      password: "attendance-lock",
+      selectLockedCells: false,
+      selectUnlockedCells: false,
+    };
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+    XLSX.writeFile(workbook, `Attendance_${selectedDate}.xlsx`);
+
+    // 🔒 Save export lock (frontend)
+    const exportedDates =
+      JSON.parse(localStorage.getItem("attendance_exported_dates")) || [];
+
+    if (!exportedDates.includes(selectedDate)) {
+      exportedDates.push(selectedDate);
+      localStorage.setItem(
+        "attendance_exported_dates",
+        JSON.stringify(exportedDates)
+      );
+    }
+  };
+
+
 
   return (
     <>
       <Navbar />
 
-      <main className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen px-8 py-10">
-        <div className="max-w-7xl mx-auto animate-fadeIn">
-          {/* Welcome Text */}
-          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <main className="bg-gray-100 min-h-screen px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto">
 
-            {/* Left Side - Welcome Text */}
+          {/* HEADER */}
+          <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-4xl font-extrabold text-gray-900">
-                Welcome Admin 👋
-              </h1>
-              <p className="mt-2 text-lg text-gray-600">
+              <h1 className="text-3xl font-bold cursor-default">Welcome Admin 👋</h1>
+              <p className="text-gray-500 cursor-default">
                 Here's a quick overview of today’s attendance
               </p>
             </div>
 
-            {/* Right Side - Search Box */}
-            <div className="relative w-full md:w-72">
+            {/* Search */}
+            <div className="w-full md:w-64">
+              <div
+                className="
+      flex items-center
+      w-full
+      h-11
+      border border-gray-300
+      rounded-xl
+      bg-white
+      shadow-sm
+      px-3
+      gap-2
+    "
+              >
+                <span className="text-gray-400 text-lg leading-none">
+                  🔍
+                </span>
 
-              {/* 🔍 Search Icon */}
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                🔍
-              </span>
-
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={handleSearch}
-                placeholder="Search employee..."
-                className="w-full pl-10 pr-4 py-2 border border-black rounded-lg shadow-sm focus:outline-none focus:ring-0"
-
-              />
-
+                <input
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  placeholder="Search employee..."
+                  className="
+        flex-1
+        bg-transparent
+        outline-none
+        border-none
+        text-sm
+      "
+                />
+              </div>
             </div>
 
-
           </div>
 
-
-          {/* Summary Cards */}
-          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"> */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <DashboardCard
-              title="Total Employees"
-              value={totalEmployees}
-              color="blue"
-            />
-            <DashboardCard
-              title="Present Today"
-              value={presentToday}
-              color="green"
-            />
-            <DashboardCard
-              title="Late Arrivals"
-              value={lateArrivals}
-              color="orange"
-            />
+          {/* DASHBOARD CARDS */}
+          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 cursor-default">
+            <Card title="TOTAL EMPLOYEES" value={employees.length} color="blue" />
+            <Card title="PRESENT TODAY" value={presentToday} color="green" />
+            <Card title="ABSENT" value={absentToday} color="orange" />
           </div>
 
-          {/* Attendance Table */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-6 py-4">Employee Name</th>
-                  <th className="px-6 py-4">Arrival</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Edit</th>
-                </tr>
-              </thead>
+          {/* xlsx */}
 
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="4" className="text-center py-6">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : filteredData.length === 0 ? (
+          <div className="flex flex-col sm:flex-row gap-3 justify-end mb-4">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm"
+            />
 
+            <button
+              onClick={exportDateWiseExcel}
+              className="
+                px-4 py-2
+                text-sm font-medium
+                border border-gray-300
+                rounded-lg
+               bg-green-600 text-white
+                "
+            >
+              Export
+            </button>
+          </div>
+
+          {/* ===== Attendance Table ===== */}
+          <div className="mt-10 bg-white rounded-xl border border-gray-200 overflow-hidden cursor-default">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-175">
+                <thead className="bg-gray-200">
                   <tr>
-                    <td colSpan="4" className="text-center py-6">
-                      No attendance records found
-                    </td>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Employee
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Arrival Time
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Action
+                    </th>
                   </tr>
-                ) : (
-                  filteredData.map((emp) => (
+                </thead>
+
+                <tbody className="divide-y divide-gray-100">
+                  {filteredData.map((emp) => (
                     <tr
                       key={emp.id}
-                      className="border-b last:border-none hover:bg-gray-50 transition"
+                      className="
+              hover:bg-gray-50
+              transition-colors
+            "
                     >
-                      <td className="px-6 py-4 font-medium text-gray-900">
-                        {emp.name}
+
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-3">
+                          {/* Avatar */}
+                          <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700
+                    flex items-center justify-center
+                    font-semibold uppercase">
+                            {emp.name?.charAt(0)}
+                          </div>
+
+                          {/* Name */}
+                          <span className="text-sm font-medium text-gray-900 capitalize">
+                            {emp.name}
+                          </span>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-700">
-                        {emp.login_time}
+
+                      {/* Arrival */}
+                      <td className="px-6 py-5 text-sm text-gray-600">
+                        {new Date(emp.login_time).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+
                       </td>
-                      <td className="px-6 py-4">
-                        <StatusBadge status={emp.status} />
+
+                      {/* Status */}
+                      <td className="px-6 py-5">
+                        <span
+                          className={`
+                  inline-flex items-center
+                  px-3 py-1
+                  rounded-full
+                  text-xs font-medium
+                  ${emp.status === "Present"
+                              ? "bg-green-50 text-green-700"
+                              : emp.status === "Half Leave"
+                                ? "bg-orange-50 text-orange-700"
+                                : "bg-red-50 text-red-700"
+                            }
+                `}
+                        >
+                          {emp.status}
+                        </span>
                       </td>
-                      {/* <td className="px-6 py-4">
-                        <button className="text-blue-600 hover:text-blue-800 font-semibold">
-                          Edit
-                        </button>
-                      </td> */}
-                      <td className="p-4">
+
+                      {/* Action */}
+                      <td className="px-6 py-5 text-right">
+
                         <button
                           onClick={() => setEditRecord(emp)}
-                          className="text-blue-600 font-semibold"
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800"
                         >
                           Edit
                         </button>
-                        {/* <button
-                        className="text-blue-600"
-                        onClick={() => {
-                          setSelectedRecord(emp);
-                          setEditOpen(true);
-                        }}
-                      >
-                        Edit */}
-                        {/* </button> */}
+
+
+
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+
+
         </div>
       </main>
-      {/* EDIT MODAL */}
+
       <EditStatusModal
-        key={editRecord?.id} // 🔑 forces fresh selection per record
         open={!!editRecord}
         record={editRecord}
         onClose={() => setEditRecord(null)}
@@ -248,45 +408,31 @@ export default function AdminPage() {
   );
 }
 
-/* =========================
-   COMPONENTS (UNCHANGED)
-========================= */
-
-function DashboardCard({ title, value, color }) {
-  const colors = {
-    blue: "text-blue-600 bg-blue-50",
-    green: "text-green-600 bg-green-50",
-    orange: "text-orange-600 bg-orange-50",
+/* ===== COMPONENTS ===== */
+function Card({ title, value, color }) {
+  const map = {
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-green-50 text-green-600",
+    orange: "bg-orange-50 text-orange-600",
   };
 
   return (
-    <div
-      className={`
-        rounded-2xl p-6 shadow-md ${colors[color]}
-        transition-all duration-300 ease-out
-        hover:shadow-xl hover:-translate-y-1
-        cursor-pointer
-      `}
-    >
-      <p className="text-sm font-semibold text-gray-600 uppercase">{title}</p>
-
-      <p className="mt-3 text-4xl font-extrabold">{value}</p>
+    <div className={`rounded-xl p-6 shadow ${map[color]}`}>
+      <p className="text-xs font-semibold text-gray-500">{title}</p>
+      <p className="text-4xl font-bold mt-2">{value}</p>
     </div>
   );
 }
 
 function StatusBadge({ status }) {
-  const base = "px-3 py-1 rounded-full text-sm font-semibold inline-block";
+  const base =
+    "inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold";
 
   if (status === "Present") {
     return (
-      <span className={`${base} bg-green-100 text-green-700`}>Present</span>
-    );
-  }
-
-  if (status === "Absent") {
-    return (
-      <span className={`${base} bg-yellow-100 text-yellow-700`}>Absent</span>
+      <span className={`${base} bg-green-100 text-green-700`}>
+        Present
+      </span>
     );
   }
 
@@ -298,5 +444,11 @@ function StatusBadge({ status }) {
     );
   }
 
-  return <span className={`${base} bg-red-100 text-red-700`}>Absent</span>;
+
+
+  return (
+    <span className={`${base} bg-red-100 text-red-700`}>
+      {status}
+    </span>
+  );
 }

@@ -4,7 +4,6 @@ import Navbar from "./Navbar";
 import EditStatusModal from "./EditStatusModal";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
-import * as XLSX from "xlsx";
 
 
 export default function AdminPage() {
@@ -23,12 +22,11 @@ export default function AdminPage() {
     const role = localStorage.getItem("role");
 
     if (!role) {
-      alert("Please login first");
-      router.push("/login");
+      router.push("/");
       return;
     }
 
-    if (role !== "Admin") {
+    if (role !== "admin") {
       router.push("/"); 
       alert("Access denied. Only Admin can access this page.");
       return

@@ -10,6 +10,7 @@ export default function AddUserModal({ open, setOpen }) {
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
   const mobileRegex = /^[6-9]\d{9}$/;
 
@@ -31,12 +32,11 @@ export default function AddUserModal({ open, setOpen }) {
     const role = localStorage.getItem("role");
 
     if (!role) {
-      alert("Please login first");
-      router.push("/login");
+      router.push("/");
       return;
     }
 
-    if (role !== "Admin") {
+    if (role !== "admin") {
       router.push("/");
       alert("Access denied. Only Admin can access this page.");
       return
@@ -44,19 +44,6 @@ export default function AddUserModal({ open, setOpen }) {
 
   }, [router]);
 
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-    const mobileRegex = /^[6-9]\d{9}$/;
-
-const handleMobileChange = (e) => {
-  const value = e.target.value;
-
-          // Allow only digits
-          if (/^\d*$/.test(value)) {
-            setMobile(value);
-  }
-};
-const isMobileValid = mobileRegex.test(mobile);
 
 
   /* =========================
@@ -156,9 +143,6 @@ const isMobileValid = mobileRegex.test(mobile);
             className={`w-full border px-4 py-2 rounded-xl ${mobile && !isMobileValid ? "border-red-500" : ""
               }`}
 
-            maxLength={10}
-            className={`w-full border px-4 py-2 rounded-xl ${mobile && !isMobileValid ? "border-red-500" : "border-gray-300"
-              }`}
             value={mobile}
             onChange={handleMobileChange}
           />

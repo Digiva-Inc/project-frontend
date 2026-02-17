@@ -20,12 +20,11 @@ export default function RemoveUserModal({ open, setOpen }) {
     const role = localStorage.getItem("role");
 
     if (!role) {
-      alert("Please login first");
-      router.push("/login");
+      router.push("/");
       return;
     }
 
-    if (role !== "Admin") {
+    if (role !== "admin") {
       router.push("/"); 
       alert("Access denied. Only Admin can access this page.");
       return

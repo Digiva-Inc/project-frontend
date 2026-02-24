@@ -8,6 +8,7 @@ export default function Navbar({ onSort }) {
   const router = useRouter();
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     setOpen(false);
     router.push("/");
   };
@@ -58,7 +59,7 @@ export default function Navbar({ onSort }) {
         {open && (
           <div
             className={` fixed
-              top-[68px]
+              top-17
               right-4
               bg-white
               shadow-lg

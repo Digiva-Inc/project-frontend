@@ -11,7 +11,7 @@ export default function EditStatusModal({ open, onClose, record, onUpdated }) {
   // Validation For Role of User || Admin
     const router = useRouter();
   
-    useEffect(() => {
+  useEffect(() => {
     const role = localStorage.getItem("role");
 
     if (!role) {

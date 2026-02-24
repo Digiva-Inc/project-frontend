@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "./navbar";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [name, setName] = useState("Employee");
@@ -17,6 +18,26 @@ export default function Page() {
   const [geoError, setGeoError] = useState("");
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
+  const router = useRouter();
+
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      router.push("/");
+      return;
+    }
+
+    if (role !== "user") {
+      router.push("/");
+      alert("Access denied. Admin cannot access this page.");
+      return
+    }
+
+  }, [router]);
+
 
   // 🔹 Load attendance status
   useEffect(() => {

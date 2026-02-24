@@ -11,6 +11,28 @@ export default function AddUserModal({ open, setOpen }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+
+  // Validation For Role of User || Admin
+  const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (!role) {
+      alert("Please login first");
+      router.push("/login");
+      return;
+    }
+
+    if (role !== "admin") {
+      router.push("/");
+      alert("Access denied. Only Admin can access this page.");
+      return
+    }
+
+  }, [router]);
+
+
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
   const mobileRegex = /^[6-9]\d{9}$/;
 
@@ -23,27 +45,6 @@ export default function AddUserModal({ open, setOpen }) {
     }
   };
   const isMobileValid = mobileRegex.test(mobile);
-
-
-  // Validation For Role of User || Admin
-  const router = useRouter();
-
-  useEffect(() => {
-    const role = localStorage.getItem("role");
-
-    if (!role) {
-      router.push("/");
-      return;
-    }
-
-    if (role !== "admin") {
-      router.push("/");
-      alert("Access denied. Only Admin can access this page.");
-      return
-    }
-
-  }, [router]);
-
 
 
   /* =========================
@@ -140,9 +141,8 @@ export default function AddUserModal({ open, setOpen }) {
             type="tel"
             placeholder="Mobile"
             maxLength={10}
-            className={`w-full border px-4 py-2 rounded-xl ${mobile && !isMobileValid ? "border-red-500" : ""
+            className={`w-full border px-4 py-2 rounded-xl ${mobile && !isMobileValid ? "border-red-500" : "border-gray-300"
               }`}
-
             value={mobile}
             onChange={handleMobileChange}
           />

@@ -16,11 +16,11 @@ export default function AddUserModal({ open, setOpen }) {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (!role) {
-      alert("Please login first");
-      router.push("/login");
+    if (!token) {
+      router.push("/");
       return;
     }
 

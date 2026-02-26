@@ -17,9 +17,10 @@ export default function RemoveUserModal({ open, setOpen }) {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (!role) {
+    if (!token) {
       router.push("/");
       return;
     }

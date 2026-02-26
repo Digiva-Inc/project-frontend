@@ -38,7 +38,11 @@ export default function Login() {
       // ✅ STORE AUTH DATA
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
-      localStorage.setItem("userName", data.user || "Employee");
+      // localStorage.setItem("userName", data.user.name);
+      // localStorage.setItem("userId", data.user.id);
+
+      localStorage.setItem("userName", data.user);
+      localStorage.setItem("userId", data.id);
 
       // ✅ REDIRECT
       if (data.role === "admin") {

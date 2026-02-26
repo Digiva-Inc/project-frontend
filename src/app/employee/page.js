@@ -1,5 +1,12 @@
 "use client";
-
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { useEffect, useState } from "react";
 import Navbar from "./navbar";
 import { useRouter } from "next/navigation";
@@ -13,14 +20,76 @@ export default function Page() {
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [distance, setDistance] = useState(null);
   const [geoError, setGeoError] = useState("");
-
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [chartData, setChartData] = useState([]);
+  const [showReport, setShowReport] = useState(false);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
   const router = useRouter();
 
+
+
+  const fetchChartData = async () => {
+    if (!fromDate || !toDate) {
+      alert("Select both dates");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Session expired. Please login again.");
+      return;
+    }
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      alert("User ID missing. Please login again.");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${API_BASE}/chart/attendance-summary?user_id=${userId}&from=${fromDate}&to=${toDate}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Error fetching data");
+        return;
+      }
+
+      const total =
+        data.total_present +
+        data.total_absent +
+        data.total_half_leave;
+
+      if (total === 0) {
+        setChartData([]);
+        return;
+      }
+
+      setChartData([
+        { name: "Present", value: data.total_present },
+        { name: "Absent", value: data.total_absent },
+        { name: "Half Leave", value: data.total_half_leave },
+      ]);
+    } catch (error) {
+      console.log(error);
+      alert("Server error");
+    }
+  };
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -165,7 +234,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      <Navbar onReportClick={() => setShowReport(prev => !prev)} />
 
       <div className="flex items-center justify-center px-4 py-10 cursor-default">
         <div className="w-full max-w-4xl bg-white rounded-3xl shadow-md p-6 sm:p-10 space-y-10">
@@ -208,6 +277,64 @@ export default function Page() {
               </p>
             )}
           </div>
+
+          {/* Chart Section */}
+          {showReport && (
+            <div className="mt-10 border rounded-2xl p-6 bg-gray-50">
+              <h2 className="text-lg font-semibold mb-4 text-center">
+                Attendance Chart (Between Dates)
+              </h2>
+
+              <div className="flex flex-col md:flex-row gap-4 justify-center mb-6">
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="border px-3 py-2 rounded"
+                />
+
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="border px-3 py-2 rounded"
+                />
+
+                <button
+                  onClick={fetchChartData}
+                  className="bg-black text-white px-6 py-2 rounded"
+                >
+                  Show Chart
+                </button>
+              </div>
+
+              {chartData.length > 0 && (
+                <div className="w-full h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={65}
+                        label={({ name, value }) =>
+                          `${name} (${value})`
+                        }
+                      >
+                        <Cell fill="#22c55e" />
+                        <Cell fill="#ef4444" />
+                        <Cell fill="#facc15" />
+                      </Pie>
+                      <Tooltip />
+                      <Legend layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center" />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>)}
+
 
           {status && (
             <div className="rounded-2xl border bg-gray-50 p-6 text-center space-y-3">

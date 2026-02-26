@@ -4,6 +4,7 @@ import Image from "next/image";
 import AddUserModal from "./AddUserModal";
 import RemoveUserModal from "./RemoveUserModal";
 import { useRouter } from "next/navigation";
+import { LogOut, Menu, X } from "lucide-react";
 
 
 export default function Navbar() {
@@ -16,15 +17,16 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (!role) {
+    if (!token) {
       router.push("/");
       return;
     }
 
     if (role !== "admin") {
-      router.push("/"); 
+      router.push("/");
       alert("Access denied. Only Admin can access this page.");
       return
     }
@@ -43,6 +45,12 @@ export default function Navbar() {
     setRemoveOpen(true);
     setDropdownOpen(false);
     setMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setMobileOpen(false);
+    router.push("/");
   };
 
   return (
@@ -98,39 +106,46 @@ export default function Navbar() {
         {/* ================= MOBILE ================= */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-3xl"
+          className="md:hidden shrink-0 transition-transform duration-300"
+          aria-label="Menu"
         >
-          ☰
+          {mobileOpen ? (
+            <X size={28} className="rotate-180 transition-transform duration-300" />
+          ) : (
+            <Menu size={28} />
+          )}
         </button>
       </nav>
 
       {/* MOBILE MENU */}
+      {/* MOBILE DROPDOWN OVERLAY */}
       {mobileOpen && (
-        <div className="md:hidden bg-white shadow border-t px-4 py-3 space-y-3">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-xl font-semibold"
-          >
-            Manage Users
-          </button>
+        <div className="md:hidden fixed top-16 right-4 z-50">
+          <div className="w-48 bg-white shadow-xl rounded-xl p-4 space-y-3 ">
 
-          {dropdownOpen && (
-            <div className="space-y-2">
-              <button
-                onClick={openAddUser}
-                className="w-full bg-blue-50 text-blue-700 px-4 py-2 rounded-lg"
-              >
-                ➕ Add User
-              </button>
+            <button
+              onClick={openAddUser}
+              className="w-full bg-blue-50 text-blue-700 px-2 py-2 flex items-center justify-start rounded-lg hover:bg-blue-100 transition"
+            >
+              ➕ Add User
+            </button>
 
-              <button
-                onClick={openRemoveUser}
-                className="w-full bg-red-50 text-red-700 px-4 py-2 rounded-lg"
-              >
-                🗑 Remove User
-              </button>
-            </div>
-          )}
+            <button
+              onClick={openRemoveUser}
+              className="w-full bg-red-50 text-red-700 px-2 py-2 flex items-center justify-start rounded-lg hover:bg-red-100 transition"
+            >
+              🗑 Remove User
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-start px-3 gap-2 bg-gray-100 py-2 text-gray-700 hover:bg-gray-200 transition rounded-lg"
+            >
+              <LogOut size={20} />
+              Logout
+            </button>
+
+          </div>
         </div>
       )}
 

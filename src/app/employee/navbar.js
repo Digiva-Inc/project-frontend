@@ -2,6 +2,7 @@
 import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar({ onSort, onReportClick }) {
   const [open, setOpen] = useState(false);
@@ -73,13 +74,39 @@ export default function Navbar({ onSort, onReportClick }) {
 
         {/* Hamburger */}
         <button
-          className="md:hidden text-2xl shrink-0"
+          className="md:hidden shrink-0 transition-transform duration-300"
           aria-label="Menu"
           onClick={() => setOpen((p) => !p)}
         >
-          ☰
+          {open ?
+            <X size={28} className="rotate-180 transition-transform duration-300" />
+            :
+            <Menu size={28} />
+          }
         </button>
 
+        {/* Mobile menu (fixed + no layout reflow) */}
+        {open && (
+          <div
+            className={` fixed
+              top-17
+              right-4
+              bg-white
+              shadow-lg
+              rounded-lg`}
+          >
+            <button
+              onClick={handleLogout}
+              className="
+  block w-full text-left
+  px-4 py-3 rounded-md
+  transition
+  bg-black text-white
+  // hover:bg-black hover:text-white
+  // active:bg-black active:text-white
+  // focus:bg-black focus:text-white
+  focus-visible:outline-none
+"
 
 {/* Mobile menu (fixed + no layout reflow) */}
 {open && (

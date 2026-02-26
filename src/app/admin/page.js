@@ -19,15 +19,16 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (!role) {
+    if (!token) {
       router.push("/");
       return;
     }
 
     if (role !== "admin") {
-      router.push("/"); 
+      router.push("/");
       alert("Access denied. Only Admin can access this page.");
       return
     }
@@ -35,7 +36,7 @@ export default function AdminPage() {
   }, [router]);
 
 
-// Fetch all Records
+  // Fetch all Records
   const fetchRecords = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;

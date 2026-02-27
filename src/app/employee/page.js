@@ -12,8 +12,11 @@ import Navbar from "./navbar";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const [viewMode, setViewMode] = useState(null);
+
   const [name, setName] = useState("Employee");
 
+  const [reportData, setReportData] = useState([]);
   const [status, setStatus] = useState(null);
   const [locked, setLocked] = useState(false);
   const [time, setTime] = useState("");
@@ -101,6 +104,40 @@ export default function Page() {
       ];
 
       setChartData(formattedData);
+    } catch (error) {
+      console.log(error);
+      alert("Server error");
+    }
+  };
+
+
+  const fetchReportData = async () => {
+    if (!fromDate || !toDate) {
+      alert("Select both dates");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(
+        `${API_BASE}/attendance/report?from=${fromDate}&to=${toDate}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Error fetching report");
+        return;
+      }
+
+      setReportData(data.records);
     } catch (error) {
       console.log(error);
       alert("Server error");
@@ -267,7 +304,7 @@ export default function Page() {
               <button
                 onClick={() => markAttendance("present")}
                 disabled={locked || loading}
-                className="px-6 py-2 rounded-xl border border-green-400 text-green-700 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed "
+                className="px-6 py-2 rounded-xl border border-green-400 text-green-700 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Present
               </button>
@@ -275,7 +312,7 @@ export default function Page() {
               <button
                 onClick={() => markAttendance("absent")}
                 disabled={locked || loading}
-                className="px-6 py-2 rounded-xl border border-red-400 text-red-700 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 rounded-xl border border-red-400 text-red-700 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Absent
               </button>
@@ -298,97 +335,171 @@ export default function Page() {
           {showReport && (
             <div className="mt-10 border rounded-2xl p-6 bg-gray-50">
               <h2 className="text-lg font-semibold mb-4 text-center">
-                Attendance Chart (Between Dates)
+                Attendance Report (Between Dates)
               </h2>
 
               <div className="flex flex-col md:flex-row gap-4 justify-center mb-6">
+
                 <input
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className="border px-3 py-2 rounded"
+                  className="border px-3 py-2 rounded-lg w-full md:w-auto text-sm cursor-pointer"
                 />
 
                 <input
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
-                  className="border px-3 py-2 rounded"
+                  className="border px-3 py-2 rounded-lg w-full md:w-auto text-sm cursor-pointer"
                 />
 
                 <button
-                  onClick={fetchChartData}
-                  className="bg-black text-white px-6 py-2 rounded"
+                  onClick={() => {
+                    setViewMode("chart");
+                    fetchChartData();
+                  }}
+                  className={`px-6 py-2 rounded-full font-medium transition-all duration-200 cursor-pointer
+                  ${viewMode === "chart"
+                      ? "bg-blue-500 text-white shadow-md scale-105"
+                      : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                    }`}
                 >
                   Show Chart
                 </button>
+
+                <button
+                  onClick={() => {
+                    setViewMode("table");
+                    fetchReportData();
+                  }}
+                  className={`px-6 py-2 rounded-full font-medium transition-all duration-200 cursor-pointer
+                ${viewMode === "table"
+                      ? "bg-blue-500 text-white shadow-md scale-105"
+                      : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                    }`}
+                >
+                  Show Report
+                </button>
               </div>
 
-              {chartData.length > 0 && (
-                <div className="w-full h-75 sm:h-87.5 md:h-105">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={chartData}
-                        dataKey="value"
-                        nameKey="name"
-                        innerRadius="55%"
-                        outerRadius="80%"
-                        paddingAngle={3}
-                        isAnimationActive
-                      >
-                        {chartData.map((entry, index) => {
-                          const colors = {
-                            Present: "#22c55e",
-                            Absent: "#ef4444",
-                            "Half Leave": "#facc15",
-                            "Auto Absent": "#2596be",
-                          };
 
-                          return (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={colors[entry.name]}
-                            />
-                          );
-                        })}
-                      </Pie>
 
-                      {/* Center Content */}
-                      <text
-                        x="50%"
-                        y="45%"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="fill-gray-500 text-sm"
-                      >
-                        Total Days
-                      </text>
+              <div className="w-full">
 
-                      <text
-                        x="50%"
-                        y="55%"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="fill-gray-800 text-2xl font-bold"
-                      >
-                        {chartData.reduce((sum, item) => sum + item.value, 0)}
-                      </text>
+                {viewMode === "chart" && chartData.length > 0 && (
+                  <div className="w-full h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={chartData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius="55%"
+                          outerRadius="80%"
+                          paddingAngle={3}
+                          isAnimationActive
+                        >
+                          {chartData.map((entry, index) => {
+                            const colors = {
+                              Present: "#22c55e",
+                              Absent: "#ef4444",
+                              "Half Leave": "#facc15",
+                              "Auto Absent": "#2596be",
+                            };
 
-                      <Tooltip
-                        formatter={(value, name) => [`${value} Days`, name]}
-                      />
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[entry.name]}
+                              />
+                            );
+                          })}
+                        </Pie>
 
-                      <Legend
-                        layout="horizontal"
-                        verticalAlign="bottom"
-                        align="center"
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
+                        {/* Center Content */}
+                        <text
+                          x="50%"
+                          y="40%"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className="fill-gray-500 text-sm"
+                        >
+                          Total Days
+                        </text>
+
+                        <text
+                          x="50%"
+                          y="50%"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className="fill-gray-800 text-2xl font-bold"
+                        >
+                          {chartData.reduce((sum, item) => sum + item.value, 0)}
+                        </text>
+
+                        <Tooltip
+                          formatter={(value, name) => [`${value} Days`, name]}
+                        />
+
+                        <Legend
+                          layout="horizontal"
+                          verticalAlign="bottom"
+                          align="center"
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                {viewMode === "table" && reportData.length > 0 && (
+                  <div className="mt-6 overflow-x-auto max-h-72 overflow-y-auto border rounded-lg">
+
+                    <table className="min-w-full bg-white">
+                      <thead className="bg-gray-200 text-gray-700 sticky top-0">
+                        <tr>
+                          <th className="px-4 py-2 text-left">#</th>
+                          <th className="px-4 py-2 text-left">Name</th>
+                          <th className="px-4 py-2 text-left">Login Time</th>
+                          <th className="px-4 py-2 text-left">Status</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {reportData.map((item, index) => (
+                          <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="px-4 py-2">{index + 1}</td>
+                            <td className="px-4 py-2">{item.name}</td>
+                            <td className="px-4 py-2">
+                              {new Date(item.login_time).toLocaleString()}
+                            </td>
+                            <td className="px-4 py-2">
+                              <span
+                                className={`px-2 py-1 rounded text-sm ${item.status === "Present"
+                                  ? "bg-green-100 text-green-700"
+                                  : item.status === "Absent"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-blue-100 text-blue-700"
+                                  }`}
+                              >
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                  </div>
+                )}
+
+              </div>
+
+
             </div>)}
+
+
+
 
 
           {status && (

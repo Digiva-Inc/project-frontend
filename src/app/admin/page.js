@@ -285,7 +285,7 @@ export default function AdminPage() {
                 text-sm font-medium
                 border border-gray-300
                 rounded-lg
-               bg-green-600 text-white
+               bg-green-600 text-white cursor-pointer
                 "
             >
               Export
@@ -377,7 +377,7 @@ export default function AdminPage() {
 
                         <button
                           onClick={() => setEditRecord(emp)}
-                          className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer"
                         >
                           Edit
                         </button>

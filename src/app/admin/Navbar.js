@@ -63,7 +63,7 @@ export default function Navbar() {
         <div className="hidden md:block relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="bg-blue-600 text-white px-5 py-2 rounded-xl font-semibold shadow hover:bg-blue-700"
+            className="bg-blue-600 text-white px-5 py-2 rounded-xl font-semibold shadow hover:bg-blue-700 cursor-pointer"
           >
             Manage Users ▾
           </button>
@@ -74,7 +74,7 @@ export default function Navbar() {
       absolute right-0 mt-3 w-52
       bg-white  shadow-lg
       rounded-xl overflow-hidden
-      z-50
+      z-50 
     "
             >
               <button
@@ -82,7 +82,7 @@ export default function Navbar() {
                 className="
         w-full px-4 py-3 text-left
         hover:bg-blue-50
-        rounded-t-xl
+        rounded-t-xl cursor-pointer
       "
               >
                 ➕ Add User
@@ -93,11 +93,20 @@ export default function Navbar() {
                 className="
         w-full px-4 py-3 text-left
         hover:bg-red-50
-        rounded-b-xl
+        rounded-b-xl cursor-pointer
       "
               >
                 🗑 Remove User
               </button>
+
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-start px-5 gap-2  py-2 text-gray-700 hover:bg-gray-200 transition cursor-pointer"
+              >
+                <LogOut size={20} />
+                Logout
+              </button>
+
             </div>
           )}
 
@@ -106,11 +115,11 @@ export default function Navbar() {
         {/* ================= MOBILE ================= */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden shrink-0 transition-transform duration-300"
+          className="md:hidden shrink-0 transition-transform duration-300 cursor-pointer"
           aria-label="Menu"
         >
           {mobileOpen ? (
-            <X size={28} className="rotate-180 transition-transform duration-300" />
+            <X size={28} className="rotate-180 transition-transform duration-300 cursor-pointer" />
           ) : (
             <Menu size={28} />
           )}
@@ -125,21 +134,21 @@ export default function Navbar() {
 
             <button
               onClick={openAddUser}
-              className="w-full bg-blue-50 text-blue-700 px-2 py-2 flex items-center justify-start rounded-lg hover:bg-blue-100 transition"
+              className="w-full bg-blue-50 text-blue-700 px-2 py-2 flex items-center justify-start rounded-lg hover:bg-blue-100 transition cursor-pointer"
             >
               ➕ Add User
             </button>
 
             <button
               onClick={openRemoveUser}
-              className="w-full bg-red-50 text-red-700 px-2 py-2 flex items-center justify-start rounded-lg hover:bg-red-100 transition"
+              className="w-full bg-red-50 text-red-700 px-2 py-2 flex items-center justify-start rounded-lg hover:bg-red-100 transition cursor-pointer"
             >
               🗑 Remove User
             </button>
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-start px-3 gap-2 bg-gray-100 py-2 text-gray-700 hover:bg-gray-200 transition rounded-lg"
+              className="w-full flex items-center justify-start px-3 gap-2 bg-gray-100 py-2 text-gray-700 hover:bg-gray-200 transition rounded-lg cursor-pointer"
             >
               <LogOut size={20} />
               Logout

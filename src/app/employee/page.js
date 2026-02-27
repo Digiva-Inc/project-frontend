@@ -54,7 +54,7 @@ export default function Page() {
 
     try {
       const res = await fetch(
-        `${API_BASE}/chart/attendance-summary?user_id=${userId}&from=${fromDate}&to=${toDate}`,
+        `${API_BASE}/chart/attendance-summary?from=${fromDate}&to=${toDate}`,
         {
           method: "GET",
           headers: {
@@ -73,18 +73,34 @@ export default function Page() {
       const total =
         data.total_present +
         data.total_absent +
-        data.total_half_leave;
+        data.total_half_leave +
+        data.total_auto_absent;
 
       if (total === 0) {
         setChartData([]);
         return;
       }
 
-      setChartData([
-        { name: "Present", value: data.total_present },
-        { name: "Absent", value: data.total_absent },
-        { name: "Half Leave", value: data.total_half_leave },
-      ]);
+      const formattedData = [
+        {
+          name: "Present",
+          value: data.total_present,
+        },
+        {
+          name: "Absent",
+          value: data.total_absent,
+        },
+        {
+          name: "Half Leave",
+          value: data.total_half_leave,
+        },
+        {
+          name: "Auto Absent",
+          value: data.total_auto_absent,
+        },
+      ];
+
+      setChartData(formattedData);
     } catch (error) {
       console.log(error);
       alert("Server error");
@@ -309,26 +325,65 @@ export default function Page() {
               </div>
 
               {chartData.length > 0 && (
-                <div className="w-full h-[300px]">
+                <div className="w-full h-75 sm:h-87.5 md:h-105">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={chartData}
                         dataKey="value"
                         nameKey="name"
-                        outerRadius={65}
-                        label={({ name, value }) =>
-                          `${name} (${value})`
-                        }
+                        innerRadius="55%"
+                        outerRadius="80%"
+                        paddingAngle={3}
+                        isAnimationActive
                       >
-                        <Cell fill="#22c55e" />
-                        <Cell fill="#ef4444" />
-                        <Cell fill="#facc15" />
+                        {chartData.map((entry, index) => {
+                          const colors = {
+                            Present: "#22c55e",
+                            Absent: "#ef4444",
+                            "Half Leave": "#facc15",
+                            "Auto Absent": "#2596be",
+                          };
+
+                          return (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={colors[entry.name]}
+                            />
+                          );
+                        })}
                       </Pie>
-                      <Tooltip />
-                      <Legend layout="horizontal"
+
+                      {/* Center Content */}
+                      <text
+                        x="50%"
+                        y="45%"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="fill-gray-500 text-sm"
+                      >
+                        Total Days
+                      </text>
+
+                      <text
+                        x="50%"
+                        y="55%"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="fill-gray-800 text-2xl font-bold"
+                      >
+                        {chartData.reduce((sum, item) => sum + item.value, 0)}
+                      </text>
+
+                      <Tooltip
+                        formatter={(value, name) => [`${value} Days`, name]}
+                      />
+
+                      <Legend
+                        layout="horizontal"
                         verticalAlign="bottom"
-                        align="center" />
+                        align="center"
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>

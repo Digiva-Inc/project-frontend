@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { FileText, LogOut, Menu, X } from "lucide-react";
 
 export default function Navbar({ onReportClick }) {
   const [open, setOpen] = useState(false);
@@ -48,15 +48,17 @@ export default function Navbar({ onReportClick }) {
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={handleReport}
-            className="px-4 py-2 rounded-md bg-black text-white hover:opacity-80 transition"
+            className="w-full flex items-center justify-start px-3 gap-2 bg-gray-300 py-2 text-gray-800 hover:bg-gray-200 transition rounded-lg cursor-pointer"
           >
+            <FileText size={18} />
             Report
           </button>
 
           <button
             onClick={handleLogout}
-            className="px-4 py-2 rounded-md bg-black text-white hover:opacity-80 transition"
+            className="w-full flex items-center justify-start px-3 gap-2 bg-gray-300 py-2 text-gray-800 hover:bg-gray-200 transition rounded-lg cursor-pointer"
           >
+            <LogOut size={18} />
             Logout
           </button>
         </div>
@@ -79,15 +81,17 @@ export default function Navbar({ onReportClick }) {
           <div className="fixed top-16 right-4 w-32 bg-white shadow-lg rounded-lg p-3 flex flex-col gap-3 z-50 md:hidden">
             <button
               onClick={handleReport}
-              className="w-full py-2 rounded-md bg-black text-white"
+              className="w-full flex items-center justify-start px-3 gap-2 bg-gray-100 py-2 text-gray-700 hover:bg-gray-200 transition rounded-lg"
             >
+              <FileText size={18} />
               Report
             </button>
 
             <button
               onClick={handleLogout}
-              className="w-full py-2 rounded-md bg-black text-white"
+              className="w-full flex items-center justify-start px-3 gap-2 bg-gray-100 py-2 text-gray-700 hover:bg-gray-200 transition rounded-lg"
             >
+              <LogOut size={20} />
               Logout
             </button>
           </div>

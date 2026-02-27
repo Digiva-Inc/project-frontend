@@ -453,42 +453,53 @@ export default function Page() {
                 )}
 
                 {viewMode === "table" && reportData.length > 0 && (
-                  <div className="mt-6 overflow-x-auto max-h-72 overflow-y-auto border rounded-lg">
+                  <div className="mt-4 border rounded-md overflow-hidden">
 
-                    <table className="min-w-full bg-white">
-                      <thead className="bg-gray-200 text-gray-700 sticky top-0">
-                        <tr>
-                          <th className="px-4 py-2 text-left">#</th>
-                          <th className="px-4 py-2 text-left">Name</th>
-                          <th className="px-4 py-2 text-left">Login Time</th>
-                          <th className="px-4 py-2 text-left">Status</th>
-                        </tr>
-                      </thead>
+                    <div className="overflow-x-auto max-h-60 overflow-y-auto">
+                      <table className="w-full text-xs sm:text-sm bg-white">
 
-                      <tbody>
-                        {reportData.map((item, index) => (
-                          <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                            <td className="px-4 py-2">{index + 1}</td>
-                            <td className="px-4 py-2">{item.name}</td>
-                            <td className="px-4 py-2">
-                              {new Date(item.login_time).toLocaleString()}
-                            </td>
-                            <td className="px-4 py-2">
-                              <span
-                                className={`px-2 py-1 rounded text-sm ${item.status === "Present"
-                                  ? "bg-green-100 text-green-700"
-                                  : item.status === "Absent"
-                                    ? "bg-red-100 text-red-700"
-                                    : "bg-blue-100 text-blue-700"
-                                  }`}
-                              >
-                                {item.status}
-                              </span>
-                            </td>
+                        <thead className="bg-gray-200 text-gray-700 sticky top-0">
+                          <tr>
+                            <th className="px-2 py-1 text-left">#</th>
+                            <th className="px-2 py-1 text-left">Name</th>
+                            <th className="px-2 py-1 text-left">Login</th>
+                            <th className="px-2 py-1 text-left">Status</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+
+                        <tbody>
+                          {reportData.map((item, index) => (
+                            <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+
+                              <td className="px-2 py-2">{index + 1}</td>
+
+                              <td className="px-2 py-2 truncate max-w-[90px]">
+                                {item.name}
+                              </td>
+
+                              <td className="px-2 py-2 text-[10px] sm:text-xs whitespace-nowrap">
+                                {new Date(item.login_time).toLocaleString()}
+                              </td>
+
+                              <td className="px-2 py-2">
+                                <span
+                                  className={`px-1.5 py-0.5 rounded text-[10px] sm:text-xs ${item.status === "Present"
+                                      ? "bg-green-100 text-green-700"
+                                      : item.status === "Absent"
+                                        ? "bg-red-100 text-red-700"
+                                        : "bg-blue-100 text-blue-700"
+                                    }`}
+                                >
+                                  {item.status}
+                                </span>
+                              </td>
+
+                            </tr>
+                          ))}
+                        </tbody>
+
+                      </table>
+                    </div>
 
                   </div>
                 )}
